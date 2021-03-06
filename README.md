@@ -2,6 +2,6 @@
 
 This is where stuff goes
 
-I am adding things - Elizabeth
-Wow so cool
+Hello I am adding things
+
 This is more stuff
