@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ImageBackground, StyleSheet, View, SafeAreaView, Text, Image, Button, Switch, SwitchComponent } from 'react-native';
 import SleepScreen from './SleepScreen';
 
-const WelcomeScreen = (props) => {
+function WelcomeScreen(props) {
     const [isEnabled, setIsEnabled] = useState(false);
     // const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const turnOnSleepMode = () => props.navigation.navigate("SleepScreen");
@@ -21,7 +21,6 @@ const WelcomeScreen = (props) => {
                     value={isEnabled}
                 />
             </View>
-            
         </ImageBackground>
     );
 }
