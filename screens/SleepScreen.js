@@ -29,22 +29,28 @@ function SleepScreen(props) {
     // }, [props.test]);
 
     return (
-        <ImageBackground 
-            style={styles.background}
-        >
-            <Text style={styles.timer}>
+        <View style={styles.background}>
+            {/* Small top timer */}
+            <Text style={styles.smallTimer}>
                 {`${pad(timer.getHours(), 2)}:${pad(timer.getMinutes(), 2)}:${pad(timer.getSeconds(), 2)}`}
             </Text>
-            <Text style={{color: "white", fontSize: 30}}>{test}</Text>
-            <Text style={styles.time}>{`${pad(time.getHours(), 2)}:${pad(time.getMinutes(), 2)}`}</Text>
-            <Text style={styles.message}>goodnight</Text>
+
+            {/* Wake up button */}
             <Button title="wake up" onPress={() => Alert.alert("Wake up", "Are you sure", [
                 {text: "Yes", onPress: () => props.navigation.navigate("WelcomeScreen")},
                 {text: "No", onPress: ()  => console.log("no pressed")}
-            ])}/>
-            <Image style={styles.logo}  source={require("../assets/koi-trans.png")} />
-            {/* <View style={styles.login}/> */}
-        </ImageBackground>
+                ])}/>
+
+            <View>
+                {/* Large timer */}
+                <Text style={styles.largeTimer}>{`${pad(time.getHours(), 2)}:${pad(time.getMinutes(), 2)}`}</Text>
+                {/* Goodnight message */}
+                <Text style={styles.message}>goodnight</Text>
+            </View>
+
+            {/* Koi image */}
+            <Image style={{width: 300, height: 250}} source={require("../assets/koi-trans.png")} />
+        </View>
     );
 }
 
@@ -56,38 +62,25 @@ function pad(num, numDigits) {
 
 const styles = StyleSheet.create({
     background: {
-        flex: 1,
-        backgroundColor: "#051C43",
-        justifyContent: "flex-start",
-        alignItems: "center"
+        backgroundColor: '#051C43', 
+        flex: 1, 
+        flexDirection: "column",
+        justifyContent: 'space-around',
+        alignItems: 'center',
     },
-    login:{
-        backgroundColor: "green",
-        width: "100%",
-        height: 100,  
-    },
-    logo: {
-        width: 250,
-        height: 250,
-        position: "absolute",
-        bottom: 100
-    },
-    time: {
+    smallTimer: {
         color: "white",
-        top: 300,
-        fontSize: 100
     },
-    timer: {
+    largeTimer: {
         color: "white",
-        top: 50
+        fontSize: 100,
     },
     message: {
         color: "white",
-        top: 320,
         fontSize: 30,
-        fontStyle: "italic"
+        fontStyle: "italic",
+        textAlign: "center",
     }
-
 })
 
 export default SleepScreen;
