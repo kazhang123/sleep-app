@@ -17,15 +17,18 @@ function SleepScreen(props) {
 
     const handleWakeUp = () => {
         var endSleep = false;
-        var message = `Are you sure you want to wake up right now? You've only slept for ${timer.hr} hours and ${timer.min} minutes`;
+        var message = `Are you sure you want to wake up right now? You've only slept for ${timer.hr} hours.`;
         if (timer.hr < 7) {
-            Alert.alert("", message, [
+            Alert.alert("You haven't slept enough!", message, [
                 {text: "Yes", onPress: () => {
                     endSleep = true
                     setTimer({sec: 0, min: 0, hr: 0})
                     props.navigation.navigate("WelcomeScreen")
                 }},
                 {text: "No", onPress: ()  => console.log("no pressed")}])
+        } else {
+            Alert.alert("We're glad you've had a good nights rest!")
+            props.navigation.navigate("WelcomeScreen")
         }
     }
 
@@ -56,7 +59,7 @@ function SleepScreen(props) {
             {/* sleep duration timer */}
             <Text style={styles.smallTimer}>
                 {`${pad(timer.hr, 2)}:${pad(timer.min, 2)}:${pad(timer.sec, 2)}`}
-            </Text>
+            </Text>            
             
             <View>
                 {/* Clock */}
@@ -112,13 +115,10 @@ const styles = StyleSheet.create({
         paddingLeft : 10,
         paddingRight : 10
     },
-    login:{
-        backgroundColor: "green",
-        width: "100%",
-        height: 100,  
-    },
     smallTimer: {
         color: "white",
+        fontSize: 20,
+        top: 80
     },
     largeTimer: {
         color: "white",
