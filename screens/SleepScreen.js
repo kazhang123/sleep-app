@@ -16,7 +16,17 @@ function SleepScreen(props) {
     }, []);
 
     const handleWakeUp = () => {
-        props.navigation.navigate("WelcomeScreen")
+        var endSleep = false;
+        var message = `Are you sure you want to wake up right now? You've only slept for ${timer.hr} hours and ${timer.min} minutes`;
+        if (timer.hr < 7) {
+            Alert.alert("", message, [
+                {text: "Yes", onPress: () => {
+                    endSleep = true
+                    setTimer({sec: 0, min: 0, hr: 0})
+                    props.navigation.navigate("WelcomeScreen")
+                }},
+                {text: "No", onPress: ()  => console.log("no pressed")}])
+        }
     }
 
     const startTimer = () => {
@@ -58,10 +68,7 @@ function SleepScreen(props) {
             {/* Wake up button */}
             <TouchableHighlight 
             style={styles.button}
-            onPress={() => Alert.alert("Are you sure you want to wake up right", "Are you sure", [
-                {text: "Yes", onPress: handleWakeUp},
-                {text: "No", onPress: ()  => console.log("no pressed")}
-            ])}>
+            onPress={handleWakeUp}>
                 <Text style={styles.buttonText}>Wake up</Text>
             </TouchableHighlight>
 
