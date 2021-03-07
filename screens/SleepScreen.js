@@ -4,11 +4,13 @@ import { ImageBackground, StyleSheet, View, Image, Button, Text, Alert } from 'r
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { sleepTimeInHours } from '../SleepTimeCalculator.js';
 import {Database} from '../Database'
+import Animated, { Easing } from 'react-native-reanimated';
+import KoiPNG from '../assets/koi-trans.png';
 
 function SleepScreen(props) {
     const [time, setTime] = useState(new Date());
     const [timer, setTimer] = useState({sec: 0, min: 0, hr: 0});
-
+    const [rotateValue, setRotateValue] = useState(new Animated.Value(0))
     var startSleepTime = new Date();
     
     // Large clock    
@@ -43,6 +45,26 @@ function SleepScreen(props) {
         updatedSec++;
         return setTimer({sec: updatedSec, min: updatedMin, hr: updatedHr})
     }
+
+    // Koi animation
+    useEffect(() => {
+        StartImageRotate();
+    }, []);
+    
+      function StartImageRotate() {
+        rotateValue.setValue(0);
+        Animated.timing(rotateValue, {
+          toValue: 1,
+          duration: 3000,
+          easing: Easing.linear,
+          useNativeDriver: true
+        }).start();
+      }
+    
+      const RotateData = rotateValue.interpolate({
+        inputRange: [0, 1],
+        outputRange: ["0deg", "360deg"],
+      });
 
     // Called when Wake up button is clicked
     const handleWakeUp = () => {
@@ -84,7 +106,7 @@ function SleepScreen(props) {
                 </View>
                 
                 {/* Koi image */}
-                <Image style={{width: 300, height: 250}}  source={require("../assets/koi-trans.png")} />
+                <Animated.Image style={{transform: [{ rotate: RotateData }], width: 300, height: 250}}  source={KoiPNG} />
 
                 {/* Wake up button */}
                 <TouchableHighlight 
