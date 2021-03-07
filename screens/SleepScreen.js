@@ -1,12 +1,12 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, View, Image, Button } from 'react-native';
 
-const SleepScreen = ({navigation}) => {
+const SleepScreen = (props) => {
     return (
         <ImageBackground 
             style={styles.background}
         >
-            <Button title="go to sleep" onPress={() => navigation.navigate("WelcomeScreen")} />
+            <Button title="go to sleep" onPress={() => props.navigation.navigate("WelcomeScreen")} />
             <Image style={styles.logo}  source={require("../assets/shrek.png")} />
             <View style={styles.login}/>
         </ImageBackground>
@@ -16,7 +16,7 @@ const SleepScreen = ({navigation}) => {
 const styles = StyleSheet.create({
     background: {
         flex: 1,
-        backgroundColor: "blue",
+        backgroundColor: "#051C43",
         justifyContent: "flex-end"
     },
     login:{
