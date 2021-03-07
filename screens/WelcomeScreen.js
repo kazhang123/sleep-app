@@ -1,16 +1,27 @@
 import { useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { ImageBackground, StyleSheet, View, Image, Button } from 'react-native';
+import React, { useState } from 'react';
+import { ImageBackground, StyleSheet, View, SafeAreaView, Text, Image, Button, Switch, SwitchComponent } from 'react-native';
 import SleepScreen from './SleepScreen';
 
 const WelcomeScreen = (props) => {
+    const [isEnabled, setIsEnabled] = useState(false);
+    // const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+    const turnOnSleepMode = () => props.navigation.navigate("SleepScreen");
+
     return (
-        <ImageBackground 
-            style={styles.background}
-        >
-            <Button title="go to sleep" onPress={() => props.navigation.navigate("SleepScreen")} />
-            <Image style={styles.logo}  source={require("../assets/shrek.png")} />
-            <View style={styles.login}/>
+        <ImageBackground style={styles.background}>
+            
+            <View style={styles.container}>
+                <Text style={styles.text}>Turn on Sleep Mode</Text>
+                <Switch
+                    trackColor={{ false: "#767577", true: "#fcc381" }}
+                    thumbColor={isEnabled ? "#ffffff" : "#f4f3f4"}
+                    ios_backgroundColor="#3e3e3e"
+                    onValueChange={turnOnSleepMode}
+                    value={isEnabled}
+                />
+            </View>
+            
         </ImageBackground>
     );
 }
@@ -18,19 +29,23 @@ const WelcomeScreen = (props) => {
 const styles = StyleSheet.create({
     background: {
         flex: 1,
-        backgroundColor: "tomato",
+        backgroundColor: "#04204d",
         justifyContent: "flex-end"
     },
-    login:{
-        backgroundColor: "yellow",
-        width: "100%",
-        height: 100,  
+    container: {
+        flex: 1,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center",
     },
-    logo: {
-        width: 100,
-        height: 100,
-        position: "absolute",
-        top: 70
+    text: {
+        padding: 5,
+        color: "white",
+        fontSize: 20,
+    },
+    hairline: {
+        backgroundColor: '#A2A2A2',
+        height: 1,
     }
 })
 export default WelcomeScreen;
