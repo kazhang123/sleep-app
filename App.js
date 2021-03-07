@@ -15,7 +15,7 @@ export default function App() {
   // console.log(Dimensions.get("screen"));
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="WelcomeScreen">
+      <Stack.Navigator initialRouteName="WelcomeScreen" screenOptions={{headerShown: false}}>
         <Stack.Screen
           name="WelcomeScreen"
           component={WelcomeScreen}
@@ -25,27 +25,9 @@ export default function App() {
           component={SleepScreen}
         />
       </Stack.Navigator>
-        {/* <WelcomeScreen /> */}
     </NavigationContainer>
   );
 }
-
-// const Stack = createStackNavigator({
-//   Welcome: {
-//     screen: WelcomeScreen
-//   },
-//   Sleep: {
-//     screen: SleepScreen
-//   },
-//   Tracker: {
-//     screen: TrackerScreen
-//   }
-// },
-// {
-//   intialRouteName: "Welcome"
-// });
-
-// const AppContainer = createAppContainer(Stack)
 
 const styles = StyleSheet.create({
   container: {

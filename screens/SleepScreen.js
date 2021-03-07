@@ -1,11 +1,12 @@
 import React from 'react';
-import { ImageBackground, StyleSheet, View, Image } from 'react-native';
+import { ImageBackground, StyleSheet, View, Image, Button } from 'react-native';
 
 const SleepScreen = ({navigation}) => {
     return (
         <ImageBackground 
             style={styles.background}
         >
+            <Button title="go to sleep" onPress={() => navigation.navigate("WelcomeScreen")} />
             <Image style={styles.logo}  source={require("../assets/shrek.png")} />
             <View style={styles.login}/>
         </ImageBackground>
