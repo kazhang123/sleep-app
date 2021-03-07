@@ -9,7 +9,7 @@ function calculateDaysBetween(date1, date2) {
     return Math.trunc(days);
 }
 
-function sleepTimeInHours(startDate, endDate) {    
+export function sleepTimeInHours(startDate, endDate) {    
     var startHour = startDate.getHours();
     var endHour = endDate.getHours();
 

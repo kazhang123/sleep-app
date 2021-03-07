@@ -5,7 +5,6 @@ import SleepScreen from './SleepScreen';
 
 function WelcomeScreen(props) {
     const [isEnabled, setIsEnabled] = useState(false);
-    // const toggleSwitch = () => setIsEnabled(previousState => !previousState);
     const turnOnSleepMode = () => props.navigation.navigate("SleepScreen");
 
     return (

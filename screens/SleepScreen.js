@@ -2,37 +2,30 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { ImageBackground, StyleSheet, View, Image, Button, Text, Alert } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import { sleepTimeInHours } from '../SleepTimeCalculator.js';
+import { CountUp } from 'use-count-up'
 
 function SleepScreen(props) {
     const [time, setTime] = useState(new Date());
     const [timer, setTimer] = useState({sec: 0, min: 0, hr: 0});
 
+    var startSleepTime = new Date();
+    
+    // Large clock
     useEffect(() => {
         let secTimer = setInterval( () => {
           setTime(new Date())
-        },1000)
+        }, 1000)
     
         return () => clearInterval(secTimer);
     }, []);
 
-    const handleWakeUp = () => {
-        var endSleep = false;
-        var message = `Are you sure you want to wake up right now? You've only slept for ${timer.hr} hours and ${timer.min} minutes`;
-        if (timer.hr < 7) {
-            Alert.alert("", message, [
-                {text: "Yes", onPress: () => {
-                    endSleep = true
-                    setTimer({sec: 0, min: 0, hr: 0})
-                    props.navigation.navigate("WelcomeScreen")
-                }},
-                {text: "No", onPress: ()  => console.log("no pressed")}])
-        }
-    }
-
-    const startTimer = () => {
-        run();
-        setInterval(run, 1000)
-    }
+    // Small sleep timer
+    useEffect(() => {
+        setInterval( () => {
+            run();
+        }, 1000)
+    }, []);
 
     var updatedSec = timer.sec;
     var updatedMin = timer.min;
@@ -50,36 +43,53 @@ function SleepScreen(props) {
         updatedSec++;
         return setTimer({sec: updatedSec, min: updatedMin, hr: updatedHr})
     }
-    
+
+    // Called when Wake up button is clicked
+    const handleWakeUp = () => {
+        var endSleep = false;
+
+        var timeSinceFallingAsleep = sleepTimeInHours(startSleepTime, new Date());
+
+        var message = "Are you sure you want to wake up right now? You\'ve only slept for " + timeSinceFallingAsleep + " hours";
+        if (timeSinceFallingAsleep < 6) {
+            Alert.alert("", message, [
+                {text: "Yes", onPress: () => {
+                    endSleep = true
+                    startSleepTime = null;
+                    props.navigation.navigate("WelcomeScreen")
+                }},
+                {text: "No", onPress: ()  => console.log("\'No\' pressed")}])
+        }
+    }
+
     return (
         <View style={styles.background}>
-            {/* sleep duration timer */}
-            <Text style={styles.smallTimer}>
+            {/* Small timer */}
+            <View style={{justifyContent: "center", flex: 1, alignItems: "center"}}>
+                <Text style={styles.smallTimer}>
                 {`${pad(timer.hr, 2)}:${pad(timer.min, 2)}:${pad(timer.sec, 2)}`}
-            </Text>
-            
-            <View>
-                {/* Clock */}
-                <Text style={styles.largeTimer}>{`${pad(time.getHours(), 2)}:${pad(time.getMinutes(), 2)}`}</Text>
-                {/* Goodnight message */}
-                <Text style={styles.message}>goodnight</Text>
+                </Text>
             </View>
+            
+            <View style={{flex: 6, justifyContent: "space-around", alignItems: "center"}}>
+                <View>
+                    {/* Clock */}
+                    <Text style={styles.largeTimer}>{`${pad(time.getHours(), 2)}:${pad(time.getMinutes(), 2)}`}</Text>
+                    {/* Goodnight message */}
+                    <Text style={styles.message}>goodnight</Text>
+                </View>
+                
+                {/* Koi image */}
+                <Image style={{width: 300, height: 250}}  source={require("../assets/koi-trans.png")} />
 
-            {/* Wake up button */}
-            <TouchableHighlight 
-            style={styles.button}
-            onPress={handleWakeUp}>
-                <Text style={styles.buttonText}>Wake up</Text>
-            </TouchableHighlight>
+                {/* Wake up button */}
+                <TouchableHighlight 
+                style={styles.button}
+                onPress={handleWakeUp}>
+                    <Text style={styles.buttonText}>Wake up</Text>
+                </TouchableHighlight>
 
-            {/* Koi image */}
-            <Image style={{width: 300, height: 250}}  source={require("../assets/koi-trans.png")} />
-
-            {/*Go to sleep button*/}
-            <TouchableHighlight style={styles.button} onPress={startTimer}>
-                <Text style={styles.buttonText}>I'm going to sleep</Text>
-            </TouchableHighlight>
-
+            </View>
         </View>
     );
 }
@@ -95,8 +105,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#051C43', 
         flex: 1, 
         flexDirection: "column",
-        justifyContent: 'space-around',
-        alignItems: 'center',
     },
     button: {
         marginRight:40,
