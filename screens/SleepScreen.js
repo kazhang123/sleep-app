@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import { ImageBackground, StyleSheet, View, Image, Button, Text, Alert } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { sleepTimeInHours } from '../SleepTimeCalculator.js';
-import { CountUp } from 'use-count-up'
 
 function SleepScreen(props) {
     const [time, setTime] = useState(new Date());
