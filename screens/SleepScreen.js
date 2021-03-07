@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { ImageBackground, StyleSheet, View, Image, Button, Text, Alert } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { sleepTimeInHours } from '../SleepTimeCalculator.js';
+import {Database} from '../Database'
 
 function SleepScreen(props) {
     const [time, setTime] = useState(new Date());
@@ -10,7 +11,7 @@ function SleepScreen(props) {
 
     var startSleepTime = new Date();
     
-    // Large clock
+    // Large clock    
     useEffect(() => {
         let secTimer = setInterval( () => {
           setTime(new Date())
@@ -54,10 +55,14 @@ function SleepScreen(props) {
             Alert.alert("", message, [
                 {text: "Yes", onPress: () => {
                     endSleep = true
-                    startSleepTime = null;
-                    props.navigation.navigate("WelcomeScreen")
+                    startSleepTime = null
+                    Database.insertSleepDuration(timeSinceFallingAsleep, timer.min)
+                    props.navigation.navigate("WelcomeScreen", {exitedSleepingMode: true})
                 }},
                 {text: "No", onPress: ()  => console.log("\'No\' pressed")}])
+        } else {
+            Alert.alert("We're glad you've had a good night's sleep!");
+            props.navigation.navigate("WelcomeScreen");
         }
     }
 
@@ -117,15 +122,13 @@ const styles = StyleSheet.create({
         color:'#fff',
         textAlign:'center',
         paddingLeft : 10,
-        paddingRight : 10
-    },
-    login:{
-        backgroundColor: "green",
-        width: "100%",
-        height: 100,  
+        paddingRight : 10,
+        fontWeight: "bold"
     },
     smallTimer: {
         color: "white",
+        top: 85,
+        fontSize: 20,
     },
     largeTimer: {
         color: "white",

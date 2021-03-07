@@ -7,12 +7,21 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import SleepScreen from './screens/SleepScreen';
 import TrackerScreen from './screens/TrackerScreen';
+import * as SplashScreen from 'expo-splash-screen';
+import useDatabase from './useDatabase'
 
 
 export default function App() {
   const Stack = createStackNavigator();
-
   // console.log(Dimensions.get("screen"));
+  // SplashScreen.preventAutoHideAsync(); //don't let the splash screen hide
+
+  const isDBLoadingComplete = useDatabase();
+
+  if (isDBLoadingComplete) {
+    SplashScreen.hideAsync();
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="WelcomeScreen" screenOptions={{headerShown: false}}>
