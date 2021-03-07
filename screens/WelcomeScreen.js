@@ -3,12 +3,14 @@ import React from 'react';
 import { ImageBackground, StyleSheet, View, Image, Button } from 'react-native';
 import SleepScreen from './SleepScreen';
 
-const WelcomeScreen = (props) => {
+function WelcomeScreen(props) {
     return (
         <ImageBackground 
             style={styles.background}
         >
-            <Button title="go to sleep" onPress={() => props.navigation.navigate("SleepScreen")} />
+            <Button title="go to sleep" onPress={() => props.navigation.navigate("SleepScreen", {
+                test: Math.random()
+            })} />
             <Image style={styles.logo}  source={require("../assets/shrek.png")} />
             <View style={styles.login}/>
         </ImageBackground>
