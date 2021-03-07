@@ -2,11 +2,12 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { ImageBackground, StyleSheet, View, Image, Button, Text, Alert } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
+import {Database} from '../Database'
 
 function SleepScreen(props) {
     const [time, setTime] = useState(new Date());
     const [timer, setTimer] = useState({sec: 0, min: 0, hr: 0});
-
+    
     useEffect(() => {
         let secTimer = setInterval( () => {
           setTime(new Date())
@@ -22,6 +23,7 @@ function SleepScreen(props) {
             Alert.alert("", message, [
                 {text: "Yes", onPress: () => {
                     endSleep = true
+                    Database.insertSleepDuration(timer.hr, timer.min)
                     setTimer({sec: 0, min: 0, hr: 0})
                     props.navigation.navigate("WelcomeScreen")
                 }},
