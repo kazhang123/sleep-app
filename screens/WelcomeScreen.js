@@ -4,7 +4,7 @@ import { ImageBackground, StyleSheet, View, Image, Button } from 'react-native';
 import SleepScreen from './SleepScreen';
 
 const WelcomeScreen = ({navigation}) => {
-    const navigation = useNavigation()
+    // const navigation = useNavigation()
     return (
         <ImageBackground 
             style={styles.background}

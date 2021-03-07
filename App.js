@@ -27,7 +27,6 @@ export default function App() {
       </Stack.Navigator>
         {/* <WelcomeScreen /> */}
     </NavigationContainer>
-    
   );
 }
 
