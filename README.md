@@ -1,3 +1,8 @@
+### nwPlus cmd-f Hackathon Submission
+
+# Drowsy
+### *An app to help you sleep*
+
 ## Inspiration
 
 School is hard. Prioritizing sleep is hard. Especially in the midst of a pandemic, the concept of time has felt nonexistent. While stuck at home, many of us have adopted bad sleeping habits, staying up to extremely late hours on our devices. Sleep is a vital, often neglected, component of every person's well-being. Drowsy is an app that will help you keep a steady sleep schedule for better health.
