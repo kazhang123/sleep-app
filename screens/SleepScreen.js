@@ -9,7 +9,7 @@ import KoiPNG from '../assets/koi-trans.png';
 
 function SleepScreen(props) {
     const [time, setTime] = useState(new Date());
-    const [timer, setTimer] = useState({sec: 0, min: 0, hr: 0});
+    // const [timer, setTimer] = useState({sec: 0, min: 0, hr: 0});
     const [rotateValue, setRotateValue] = useState(new Animated.Value(0))
     var startSleepTime = new Date();
     
@@ -22,29 +22,29 @@ function SleepScreen(props) {
         return () => clearInterval(secTimer);
     }, []);
 
-    // Small sleep timer
-    useEffect(() => {
-        setInterval( () => {
-            run();
-        }, 1000)
-    }, []);
+    // // Small sleep timer
+    // useEffect(() => {
+    //     setInterval( () => {
+    //         run();
+    //     }, 1000)
+    // }, []);
 
-    var updatedSec = timer.sec;
-    var updatedMin = timer.min;
-    var updatedHr = timer.hr;
+    // var updatedSec = timer.sec;
+    // var updatedMin = timer.min;
+    // var updatedHr = timer.hr;
 
-    const run = () => {
-        if (updatedSec === 60) {
-            updatedMin++;
-            updatedSec = 0;
-        }
-        if (updatedMin === 60) {
-            updatedHr++;
-            updatedMin = 0;
-        }
-        updatedSec++;
-        return setTimer({sec: updatedSec, min: updatedMin, hr: updatedHr})
-    }
+    // const run = () => {
+    //     if (updatedSec === 60) {
+    //         updatedMin++;
+    //         updatedSec = 0;
+    //     }
+    //     if (updatedMin === 60) {
+    //         updatedHr++;
+    //         updatedMin = 0;
+    //     }
+    //     updatedSec++;
+    //     return setTimer({sec: updatedSec, min: updatedMin, hr: updatedHr})
+    // }
 
     // Koi animation
     useEffect(() => {
@@ -78,7 +78,7 @@ function SleepScreen(props) {
                 {text: "Yes", onPress: () => {
                     endSleep = true
                     startSleepTime = null
-                    Database.insertSleepDuration(timeSinceFallingAsleep, timer.min)
+                    Database.insertSleepDuration(9, 20)
                     props.navigation.navigate("WelcomeScreen", {exitedSleepingMode: true})
                 }},
                 {text: "No", onPress: ()  => console.log("\'No\' pressed")}])
@@ -90,12 +90,12 @@ function SleepScreen(props) {
 
     return (
         <View style={styles.background}>
-            {/* Small timer */}
+            {/* Small timer
             <View style={{justifyContent: "center", flex: 1, alignItems: "center"}}>
                 <Text style={styles.smallTimer}>
                 {`${pad(timer.hr, 2)}:${pad(timer.min, 2)}:${pad(timer.sec, 2)}`}
                 </Text>
-            </View>
+            </View> */}
             
             <View style={{flex: 6, justifyContent: "space-around", alignItems: "center"}}>
                 <View>

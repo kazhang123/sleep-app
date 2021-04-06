@@ -10,14 +10,20 @@ const WelcomeScreen = (props) => {
     const [isEnabled, setIsEnabled] = useState(false);
     const [sleepTime, setSleepTime] = useState({hour: 0, minute: 0})
     const turnOnSleepMode = () => props.navigation.navigate("SleepScreen");
-		const isFocused = useIsFocused()
+    const isFocused = useIsFocused()
 
-		const setSleepCallback = (_hour, _minute) => {
-			setSleepTime({hour: _hour, minute: _minute});
-		}
+    const setSleepCallback = (_hour, _minute) => {
+        setSleepTime({hour: _hour, minute: _minute});
+    }
+
+    // useEffect(() => {
+    //     return () => {
+    //         setSleepTime({});
+    //     }
+    // }, []);
 
     useEffect(() => {
-			Database.getLastSleep(setSleepCallback);
+        Database.getLastSleep(setSleepCallback);
     }, [isFocused]);
 
     return (
@@ -33,6 +39,7 @@ const WelcomeScreen = (props) => {
                     onValueChange={turnOnSleepMode}
                     value={isEnabled}
                 />
+                <Button style={{alignSelf: "flex-start", position: "absolute", top: "80%"}} title="hello" onPress={() => props.navigation.navigate("TrackerScreen")}/>
             </View>
         </ImageBackground>
     );

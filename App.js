@@ -9,18 +9,45 @@ import SleepScreen from './screens/SleepScreen';
 import TrackerScreen from './screens/TrackerScreen';
 import * as SplashScreen from 'expo-splash-screen';
 import useDatabase from './useDatabase'
+import { useCallback, useEffect, useState } from 'react/cjs/react.production.min';
 
 
 export default function App() {
+  // const [isAppReady, setIsAppReady] = useState(false);
   const Stack = createStackNavigator();
   // console.log(Dimensions.get("screen"));
-  // SplashScreen.preventAutoHideAsync(); //don't let the splash screen hide
+  // useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync(); //don't let the splash screen hide
 
-  const isDBLoadingComplete = useDatabase();
+        const isDBLoadingComplete = useDatabase();
+      
+        if (isDBLoadingComplete) {
+          SplashScreen.hideAsync();
+        }
+      } catch (e) {
+        console.warn(e);
+      }     
+    }
 
-  if (isDBLoadingComplete) {
-    SplashScreen.hideAsync();
-  }
+    prepare();
+  // }, [])
+  
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (isAppReady) {
+  //     // This tells the splash screen to hide immediately! If we call this after
+  //     // `setAppIsReady`, then we may see a blank screen while the app is
+  //     // loading its initial state and rendering its first pixels. So instead,
+  //     // we hide the splash screen once we know the root view has already
+  //     // performed layout.
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [isAppReady]);
+
+  // if (!isAppReady) {
+  //   return null;
+  // }
 
   return (
     <NavigationContainer>
@@ -32,6 +59,10 @@ export default function App() {
         <Stack.Screen
           name="SleepScreen"
           component={SleepScreen}
+        />
+        <Stack.Screen 
+          name="TrackerScreen"
+          component={TrackerScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>
