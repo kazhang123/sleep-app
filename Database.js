@@ -12,7 +12,7 @@ const getAllEntries = async (setFunc) => {
         'SELECT hour, minute, timestamp FROM sleep_duration',
         [],
         (_, _array) => {
-            console.log("length:" + _array.rows.length);
+            // console.log("length:" + _array.rows.length);
             // setFunc(_array.rows.item);
             let entries = [];
             for (let i = 0; i < _array.rows.length; i++) {
@@ -23,8 +23,8 @@ const getAllEntries = async (setFunc) => {
               };
               entries.push(entry);
             }
-            console.log("entries: " + entries.length);
-            console.log(entries[entries.length - 1]);
+            // console.log("entries: " + entries.length);
+            // console.log(entries[entries.length - 1]);
             setFunc(entries);
         }
         );

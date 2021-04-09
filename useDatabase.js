@@ -3,8 +3,8 @@ import React, {useEffect, useState} from 'react';
 import {Database} from './Database'
 
 export default function useDatabase() {
-    const [isDBLoadingComplete, setDBLoadingComplete] = useState(false);
-  
+    // const [isDBLoadingComplete, setDBLoadingComplete] = useState(false);
+    const isDBLoadingComplete = false;
     useEffect(() => {
       async function loadDataAsync() {
         try {
@@ -12,7 +12,7 @@ export default function useDatabase() {
           await Database.setupDatabaseAsync()
           // await Database.setupSleepAsync()
   
-          setDBLoadingComplete(true);
+          isDBLoadingComplete = true;
         } catch (e) {
           console.warn(e);
         }
@@ -32,7 +32,7 @@ export function getAllEntries(entries) {
       try {
         await Database.getAllEntries(entries);
 
-        setDBLoadingComplete(true);
+        setIsDBLoadingComplete(true);
       } catch (e) {
         console.warn(e);
       }

@@ -22,29 +22,29 @@ function SleepScreen(props) {
         return () => clearInterval(secTimer);
     }, []);
 
-    // // Small sleep timer
-    // useEffect(() => {
-    //     setInterval( () => {
-    //         run();
-    //     }, 1000)
-    // }, []);
+    // Small sleep timer
+    useEffect(() => {
+        setInterval( () => {
+            run();
+        }, 1000)
+    }, []);
 
-    // var updatedSec = timer.sec;
-    // var updatedMin = timer.min;
-    // var updatedHr = timer.hr;
+    var updatedSec = timer.sec;
+    var updatedMin = timer.min;
+    var updatedHr = timer.hr;
 
-    // const run = () => {
-    //     if (updatedSec === 60) {
-    //         updatedMin++;
-    //         updatedSec = 0;
-    //     }
-    //     if (updatedMin === 60) {
-    //         updatedHr++;
-    //         updatedMin = 0;
-    //     }
-    //     updatedSec++;
-    //     return setTimer({sec: updatedSec, min: updatedMin, hr: updatedHr})
-    // }
+    const run = () => {
+        if (updatedSec === 60) {
+            updatedMin++;
+            updatedSec = 0;
+        }
+        if (updatedMin === 60) {
+            updatedHr++;
+            updatedMin = 0;
+        }
+        updatedSec++;
+        return setTimer({sec: updatedSec, min: updatedMin, hr: updatedHr})
+    }
 
     // Koi animation
     useEffect(() => {
