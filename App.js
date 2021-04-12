@@ -9,26 +9,63 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as SplashScreen from 'expo-splash-screen';
 import useDatabase from './useDatabase';
+import { useEffect, useState } from 'react/cjs/react.production.min';
+import { Database } from './Database';
 
 export default function App() {
   const Stack = createStackNavigator();
+  // const [isLoading, setIsLoading] = useState(true);
   // console.log(Dimensions.get("screen"));
+  // const [isDBLoadingComplete, setIsDBLoadingComplete] = useState(false);
 
-  async function prepare() {
-    try {
-      await SplashScreen.preventAutoHideAsync(); //don't let the splash screen hide
+  // useEffect(() => {
+    async function prepare() {
+      try {
+        await SplashScreen.preventAutoHideAsync(); //don't let the splash screen hide
+  
+        await Database.setupDatabaseAsync()
+        // let isDBLoadingComplete = false;
+        // isDBLoadingComplete = useDatabase();
+      
+        // if (isDBLoad ingComplete) {
+        //   setIsLoading(false);
+          SplashScreen.hideAsync();
+        // }
+      } catch (e) {
+        console.warn(e);
+      } 
+    }
 
-      const isDBLoadingComplete = useDatabase();
-    
-      if (isDBLoadingComplete) {
-        SplashScreen.hideAsync();
-      }
-    } catch (e) {
-      console.warn(e);
-    }     
-  }
+    prepare();
+  // })
 
-  prepare();
+  // async function prepare() {
+  //   try {
+  //     await SplashScreen.preventAutoHideAsync(); //don't let the splash screen hide
+
+  //     let isDBLoadingComplete = false;
+  //     isDBLoadingComplete = useDatabase();
+      
+  //     if (isDBLoadingComplete) {
+  //       // setIsLoading(false);
+  //       SplashScreen.hideAsync();
+  //     }
+  //   } catch (e) {
+  //     console.warn(e);
+  //   }     
+  // }
+
+  // prepare();
+  // useEffect(() => {
+  //   prepare();
+  // },[isLoading]);
+
+  // if (isLoading) {
+  //   return null;
+  // }
+  // if (!isDBLoadingComplete) {
+  //   return null;
+  // }
 
   return (
     <NavigationContainer>

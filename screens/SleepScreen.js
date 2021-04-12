@@ -9,7 +9,7 @@ import KoiPNG from '../assets/koi-trans.png';
 
 function SleepScreen(props) {
     const [time, setTime] = useState(new Date());
-    // const [timer, setTimer] = useState({sec: 0, min: 0, hr: 0});
+    const [timer, setTimer] = useState({sec: 0, min: 0, hr: 0});
     const [rotateValue, setRotateValue] = useState(new Animated.Value(0))
     var startSleepTime = new Date();
     
@@ -70,7 +70,7 @@ function SleepScreen(props) {
     const handleWakeUp = () => {
         var endSleep = false;
 
-        var timeSinceFallingAsleep = sleepTimeInHours(startSleepTime, new Date());
+        var timeSinceFallingAsleep = 8;
 
         var message = "Are you sure you want to wake up right now? You\'ve only slept for " + timeSinceFallingAsleep + " hours";
         if (timeSinceFallingAsleep < 6) {
@@ -78,11 +78,12 @@ function SleepScreen(props) {
                 {text: "Yes", onPress: () => {
                     endSleep = true
                     startSleepTime = null
-                    Database.insertSleepDuration(9, 20)
+                    Database.insertSleepDuration(timeSinceFallingAsleep, 10)
                     props.navigation.navigate("WelcomeScreen", {exitedSleepingMode: true})
                 }},
                 {text: "No", onPress: ()  => console.log("\'No\' pressed")}])
         } else {
+            Database.insertSleepDuration(timeSinceFallingAsleep, 10)
             Alert.alert("We're glad you've had a good night's sleep!");
             props.navigation.navigate("WelcomeScreen");
         }
@@ -90,12 +91,12 @@ function SleepScreen(props) {
 
     return (
         <View style={styles.background}>
-            {/* Small timer
+            {/* Small timer */}
             <View style={{justifyContent: "center", flex: 1, alignItems: "center"}}>
                 <Text style={styles.smallTimer}>
                 {`${pad(timer.hr, 2)}:${pad(timer.min, 2)}:${pad(timer.sec, 2)}`}
                 </Text>
-            </View> */}
+            </View>
             
             <View style={{flex: 6, justifyContent: "space-around", alignItems: "center"}}>
                 <View>

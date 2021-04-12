@@ -1,56 +1,36 @@
 import React from 'react';
 import { useEffect } from 'react';
 import { useState } from 'react';
-import { ImageBackground, StyleSheet, View, Image, Button } from 'react-native';
+import { ImageBackground, StyleSheet, View, Image, Button, Text } from 'react-native';
 import { useCallback } from 'react/cjs/react.production.min';
 import { VictoryBar, VictoryChart, VictoryTheme, VictoryLabel, VictoryZoomContainer, VictoryAxis } from "victory-native";
 import {Database} from '../Database'
 import * as SplashScreen from 'expo-splash-screen';
-import {getAllEntries} from '../useDatabase'
 import { useIsFocused } from '@react-navigation/core';
 
 function TrackerScreen(props) {
   const [data, setData] = useState([]);
   const [dataSet, setDataset] = useState([]);
+  const [ticks, setTicks] = useState([new Date()]);
   const [isDBLoadingComplete, setIsDBLoadingComplete] = useState(false);
+  const [domain, setDomain] = useState({
+    x: [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), Date.now()]
+  });
+
   const isFocused = useIsFocused()
-  const dayOfWeekMap = {
-    0: "M",
-    1: "T",
-    2: "W",
-    3: "Th",
-    4: "F",
-    5: "Sa",
-    6: "Su"
-  };
-
-  // console.log(data);
-
-  // const getAllEntriesCallback = (entries) => {
-  //   console.log("entries parameter length: " + entries.length);
-  //   setData([...entries]);
-  //   console.log("line 14" + data.length);
-  // }
-
-  // useEffect(() => {
-  //   Database.getAllEntries(getAllEntriesCallback);
-  // }, []);
 
   useEffect(() => {
     async function prepare() {
       try {
-        console.log("line 46");
         await Database.getAllEntries((entries) => {
           setData([...entries]);
-          // console.log(entries);
         });
+
+        setIsDBLoadingComplete(true);
+
       } catch (error) {
-        console.warn(error);
-        console.log("line 70");
-      } finally {
-          setIsDBLoadingComplete(true);
-          console.log("line 72");
-      }
+          console.warn(error);
+      } 
     }
     
     prepare();
@@ -60,30 +40,38 @@ function TrackerScreen(props) {
   useEffect(() => {
     if (isDBLoadingComplete) {
       console.log("data length:" + data.length);
-      // setDataset([...entries]);
+      let ticks = [];
       let dataPoints = [];
       for (let i = 0; i < data.length; i++) {
+        let date = new Date(data[i].date.replace(" ", "T"));
         let dataPoint = {
-          x: new Date(data[i].date.replace(" ", "T")),
+          x: date,
           y: data[i].time,
         }
-        console.log(dataPoint);
 
+        ticks.push(date);
         dataPoints.push(dataPoint);
       }
+      setTicks(ticks);
+
       setDataset(dataPoints);
-      // console.log(dataPoints);
     }
   }, [isDBLoadingComplete]);
 
-  const getTicks = () => {
-    let ticks = [];
-    for (let i = 0; i < dataSet.length; i++) {
-      ticks.push(dataSet[i].day);
+  useEffect(() => {
+    if (dataSet.length > 0) {
+      let lastDate = dataSet[dataSet.length - 1].x;
+      if (dataSet.length >= 7) {
+        setDomain({
+          x: [dataSet[dataSet.length - 8].x, lastDate]
+        });
+      } else {
+        setDomain({
+          x: [new Date(lastDate - 7 * 24 * 60 * 60 * 1000), lastDate]
+        });
+      }
     }
-    console.log("line 115");
-    return ticks;
-  };
+  }, [dataSet])
 
   const getDomain = () => {
     if (dataSet == undefined || dataSet.length === 0) {
@@ -111,44 +99,36 @@ function TrackerScreen(props) {
   if (!isDBLoadingComplete) {
     return null;
   }
-
     return (
         <View style={styles.container}>
+        <Text>Average time in bed:</Text>
         <Button title="hello" onPress={() => props.navigation.navigate("WelcomeScreen")}/>
-        {/* <svg viewBox="0 0 450 350">
-        <g> */}
           <VictoryChart 
             // scale="time"
             width={400} 
             // style={axisTime}
-            // tickValues={getTicks}
-            // tickFormat={
-            //   (x) => {
-            //     let month = (x.getUTCMonth() + 1).toString();
-            //     let day = x.getDate().toString();
-            //     return month + "-" + day; 
-            //   }
-            // }
             theme={VictoryTheme.material}
             containerComponent={
               <VictoryZoomContainer 
-                zoomDomain= {getDomain}
+                zoomDomain= {domain}
                 // onZoomDomainChange={ }
               />
             }
             >
 
               <VictoryAxis
-                // tickValues={getTicks}
-                // tickFormat={
-                //   (x) => {
-                //     let month = (x.getUTCMonth() + 1).toString();
-                //     let day = x.getDate().toString();
-                //     return month + "-" + day; 
-                //   } 
-                // }
+                tickValues={ticks}
+                tickFormat={(x) => {
+                  if (isDBLoadingComplete) {
+                    // console.log("line 107");
+                    return `${x.getMonth() + 1}-${x.getDate()}`;
+                    // return '';
+                  } 
+                  return '';
+                }}
+                // tickFormat={x => ''} // remove existing labels
                 scale="time"
-                standalone={false}
+                // standalone={false}
               />
 
             <VictoryAxis dependentAxis
@@ -159,24 +139,16 @@ function TrackerScreen(props) {
               // x="day" 
               // y="time"
               alignment="start"
-              barRatio={0.9}
+              // barRatio={0.9}
+              barWidth={20}
               cornerRadius={{ top: 12, bottom: 12 }}
               data={dataSet}
-            //   data={ [{x: new Date(2000, 1, 1), y: 12},
-            //   {x: new Date(2021, 6, 1), y: 10},
-            //   {x: new Date(2021, 12, 1), y: 11},
-            //   {x: new Date(2021, 1, 1), y: 5},
-            //   {x: new Date(2021, 1, 1), y: 4},
-            //   {x: new Date(2021, 1, 1), y: 6},
-            //   {x: new Date(2021, 1, 1), y: 5},
-            //   {x: new Date(2021, 1, 1), y: 7},
-            //   {x: new Date(2021, 1, 1), y: 8},
-            //   {x: new Date(2021, 1, 1), y: 9},
-            //   {x: new Date(2021, 1, 1), y: 5},
-            //   {x: new Date(2021, 1, 1), y: 1},
-            //   {x: new Date(2021, 1, 1), y: 2},]
-            // }
-              domainPadding={{x: [10, 10]}}
+              domainPadding={{x: [25, 25]}}
+              // labels={( datum ) => {  return `${datum.x.toLocaleString('default', { month: 'short' })}`}} // get labels as month name
+              // https://stackoverflow.com/questions/57890002/how-to-control-victory-x-axis-ticks-labels
+              // labels={(datum) => {`${datum.x.getMonth() + 1}-${datum.x.getDate()}`}}
+              // labelComponent={<VictoryLabel y={250} verticalAnchor={"start"}/>}
+
               // scale={{x: "time"}}
               // standalone={false}
               // horizontal={true} 
@@ -185,10 +157,6 @@ function TrackerScreen(props) {
               // labelComponent={<VictoryLabel dx={-97} dy={-5}/>}
               // y0={(d) => d.time - 7}
               />
-
-              
-              {/* </g>
-            </svg> */}
             </VictoryChart>
       </View>
     );

@@ -5,7 +5,7 @@ import * as SQLite from "expo-sqlite"
 const db = SQLite.openDatabase('db.db')
 
 const getAllEntries = async (setFunc) => {
-  return new Promise((resolve, _reject) => {
+  return new Promise((resolve, reject) => {
     db.transaction(
       tx => {
         tx.executeSql(
@@ -29,7 +29,7 @@ const getAllEntries = async (setFunc) => {
         }
         );
       },
-      (t, error) => { console.log("db error load times"); console.log(error); resolve() },
+      (t, error) => { console.log("db error load times"); console.log(error); reject(error) },
       (_t, _success) => { console.log("loaded times"); resolve(_success);}
       );
     })

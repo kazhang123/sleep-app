@@ -28,7 +28,6 @@ const WelcomeScreen = (props) => {
 
     return (
         <ImageBackground style={styles.background}>
-            
             <View style={styles.container}>
                 <Text style={{alignSelf: "flex-start", position: "absolute", color: "white", fontSize: 20, top: "40%"}}>{`You last slept for ${sleepTime.hour} hours ${sleepTime.minute} minutes`}</Text>
                 <Text style={styles.text}>Turn on Sleep Mode</Text>
