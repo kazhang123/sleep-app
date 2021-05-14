@@ -7,6 +7,7 @@ import { VictoryBar, VictoryChart, VictoryTheme, VictoryLabel, VictoryZoomContai
 import {Database} from '../Database'
 import * as SplashScreen from 'expo-splash-screen';
 import { useIsFocused } from '@react-navigation/core';
+import {calculateSleepTime} from '../utils/sleepTimeCalculator'
 
 function TrackerScreen(props) {
   const [data, setData] = useState([]);
@@ -43,13 +44,15 @@ function TrackerScreen(props) {
       let ticks = [];
       let dataPoints = [];
       for (let i = 0; i < data.length; i++) {
-        let date = new Date(data[i].date.replace(" ", "T"));
+        console.log(data[i]);
+        let startTime = new Date(data[i].startTime.replace(" ", "T"));
+        let endTime = new Date(data[i].endTime.replace(" ", "T"))
         let dataPoint = {
-          x: date,
-          y: data[i].time,
+          x: startTime,
+          y: calculateSleepTime(startTime, endTime),
         }
 
-        ticks.push(date);
+        ticks.push(startTime);
         dataPoints.push(dataPoint);
       }
       setTicks(ticks);
@@ -104,9 +107,7 @@ function TrackerScreen(props) {
         <Text>Average time in bed:</Text>
         <Button title="hello" onPress={() => props.navigation.navigate("WelcomeScreen")}/>
           <VictoryChart 
-            // scale="time"
             width={400} 
-            // style={axisTime}
             theme={VictoryTheme.material}
             containerComponent={
               <VictoryZoomContainer 
@@ -120,15 +121,11 @@ function TrackerScreen(props) {
                 tickValues={ticks}
                 tickFormat={(x) => {
                   if (isDBLoadingComplete) {
-                    // console.log("line 107");
                     return `${x.getMonth() + 1}-${x.getDate()}`;
-                    // return '';
                   } 
                   return '';
                 }}
-                // tickFormat={x => ''} // remove existing labels
                 scale="time"
-                // standalone={false}
               />
 
             <VictoryAxis dependentAxis
@@ -136,8 +133,6 @@ function TrackerScreen(props) {
             />
 
             <VictoryBar 
-              // x="day" 
-              // y="time"
               alignment="start"
               // barRatio={0.9}
               barWidth={20}
@@ -170,18 +165,5 @@ const styles = StyleSheet.create({
       backgroundColor: "#f5fcff"
     },
   });
-
-  const axisTime = {
-    // axis: { stroke: "black", strokeWidth: 1},
-    // ticks: {
-    //   size: ({ tick }) => {
-    //     const tickSize =
-    //       tick.getFullYear() % 5 === 0 ? 10 : 5;
-    //     return tickSize;
-    //   },
-    //   stroke: "black",
-    //   strokeWidth: 1
-    // }
-  }
 
 export default TrackerScreen;

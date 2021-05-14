@@ -6,13 +6,19 @@ import { sleepTimeInHours } from '../SleepTimeCalculator.js';
 import {Database} from '../Database'
 import Animated, { Easing } from 'react-native-reanimated';
 import KoiPNG from '../assets/koi-trans.png';
+import { useIsFocused } from '@react-navigation/core';
 
 function SleepScreen(props) {
     const [time, setTime] = useState(new Date());
     const [timer, setTimer] = useState({sec: 0, min: 0, hr: 0});
     const [rotateValue, setRotateValue] = useState(new Animated.Value(0))
+    const isFocused = useIsFocused();
     var startSleepTime = new Date();
     
+    // useEffect(() => {
+    //     console.log("line 19");
+    //     Database.insertStartTime();
+    // }, [isFocused])
     // Large clock    
     useEffect(() => {
         let secTimer = setInterval( () => {
@@ -66,24 +72,28 @@ function SleepScreen(props) {
         outputRange: ["0deg", "360deg"],
       });
 
+    async function recordWakeUpTime() {
+        try {
+            await Database.insertEndTime();
+        } catch(e) {
+            console.log(e);
+        }
+    }
     // Called when Wake up button is clicked
     const handleWakeUp = () => {
-        var endSleep = false;
-
         var timeSinceFallingAsleep = 8;
 
         var message = "Are you sure you want to wake up right now? You\'ve only slept for " + timeSinceFallingAsleep + " hours";
         if (timeSinceFallingAsleep < 6) {
             Alert.alert("", message, [
                 {text: "Yes", onPress: () => {
-                    endSleep = true
                     startSleepTime = null
-                    Database.insertSleepDuration(timeSinceFallingAsleep, 10)
+                    recordWakeUpTime();
                     props.navigation.navigate("WelcomeScreen", {exitedSleepingMode: true})
                 }},
                 {text: "No", onPress: ()  => console.log("\'No\' pressed")}])
         } else {
-            Database.insertSleepDuration(timeSinceFallingAsleep, 10)
+            recordWakeUpTime();
             Alert.alert("We're glad you've had a good night's sleep!");
             props.navigation.navigate("WelcomeScreen");
         }

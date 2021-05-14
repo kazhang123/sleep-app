@@ -9,17 +9,15 @@ const getAllEntries = async (setFunc) => {
     db.transaction(
       tx => {
         tx.executeSql(
-        'SELECT hour, minute, timestamp FROM sleep_duration',
+        'SELECT start_time, end_time FROM sleep_duration',
         [],
         (_, _array) => {
-            // console.log("length:" + _array.rows.length);
-            // setFunc(_array.rows.item);
             let entries = [];
             for (let i = 0; i < _array.rows.length; i++) {
               let item = _array.rows.item(i);
               let entry = {
-                time: item.hour + item.minute / 60,
-                date: item.timestamp
+                startTime: item.start_time,
+                endTime: item.end_time,
               };
               entries.push(entry);
             }
@@ -29,8 +27,8 @@ const getAllEntries = async (setFunc) => {
         }
         );
       },
-      (t, error) => { console.log("db error load times"); console.log(error); reject(error) },
-      (_t, _success) => { console.log("loaded times"); resolve(_success);}
+      (_, error) => { console.log("db error get all entries"); console.log(error); reject(error) },
+      (_, success) => { console.log("loaded all entries"); resolve(success);}
       );
     })
 }
@@ -39,18 +37,16 @@ const getLastSleep = (setFunc) => {
 	db.transaction(
 			tx => {
 				tx.executeSql(
-				'SELECT * FROM sleep_duration WHERE id=(SELECT MAX(id) FROM sleep_duration)',
-				[],
-				(_, _array) => {
-						// console.log(_array.rows.length)
-						// console.log(_array.rows.item(0))
-            setFunc(_array.rows.item(0).hour, _array.rows.item(0).minute)
-				}
+          'SELECT start_time, end_time FROM sleep_duration WHERE id=(SELECT MAX(id) FROM sleep_duration)',
+          [],
+          (_, _array) => {
+            setFunc(_array.rows.item(0).start_time, _array.rows.item(0).end_time)
+          }
 				);
 			},
-			(t, error) => { console.log("db error load times"); console.log(error) },
-			(_t, _success) => { console.log("loaded times")}
-			);
+      (_, error) => { console.log("db error loading start and end time times"); console.log(error) },
+      (_, success) => { console.log("loaded start and end time")}
+    );
 }
 
 const insertSleepDuration = (hours, minutes) => {
@@ -62,51 +58,138 @@ const insertSleepDuration = (hours, minutes) => {
   )
 }
 
-
-
-const dropDatabaseTablesAsync = async () => {
+const insertEndTime = () => {
   return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(
-        'DROP TABLE sleep_duration',
-        [],
-        (_, result) => { resolve(result) },
-        (_, error) => { console.log("error dropping users table"); reject(error)
-        }
-      )
-    })
-  })
-}
-
-const setupDatabaseAsync = async () => {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-        tx.executeSql(
-          'CREATE TABLE IF NOT EXISTS sleep_duration (id INT NOT NULL AUTO_INCREMENT, hour INT, minute INT, timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY (`id`));'
-        );
-      },
-      (_, error) => { console.log("db error creating tables:"); console.log(error); reject(error) },
-      (_, success) => { resolve(success)}
-    )
-  })
-}
-
-const setupSleepAsync = async () => {
-  return new Promise((resolve, _reject) => {
     db.transaction( tx => {
-        tx.executeSql( 'INSERT INTO sleep_duration (hour, minute) values (?,?)', [0, 0] );
-      },
-      (t, error) => { console.log("db error insertSleepDuration"); console.log(error); resolve() },
-      (t, success) => { resolve(success)}
+      tx.executeSql(
+        // 'UPDATE sleep_duration SET end_time=CURRENT_TIMESTAMP WHERE id=(SELECT MAX(id));'
+        'UPDATE sleep_duration SET end_time=CURRENT_TIMESTAMP WHERE id=(SELECT MAX(id) from sleep_duration);'
+      );
+    },
+    (_, error) => { console.log("db error insertEndTime"); reject(error);},
+    (_, success) => { console.log("successfully inserted end time"); resolve(success);}
     )
   })
 }
+
+const insertStartTime = () => {
+  // return new Promise((resolve, reject) => {
+  //   console.log("line 73");
+  //   db.transaction( 
+  //     tx => {
+  //       console.log("line 77");
+  //       tx.executeSql( 'INSERT INTO sleep_duration (start_time) VALUES (CURRENT_TIMESTAMP);');
+  //     },
+  //     (_, error) => { console.log("db error insertStartTime"); reject(error);},
+  //     (_, success) => { console.log("successfully insert start time"); resolve(success);}
+  //   )
+  // })
+  return new Promise((resolve, reject) => {
+    console.log("line 88");
+    db.transaction(
+      tx => {
+        console.log("line 91");
+        tx.executeSql(
+          'INSERT INTO sleep_duration (start_time) VALUES (CURRENT_TIMESTAMP);'
+        )
+      }, 
+      (_, error) => {console.log("error insertStartTime"); reject(error);},
+      (_, success) => {console.log("successfully inserted start time"); resolve(success);}
+    )
+  })
+}
+
+const dropDatabaseTablesAsync = () => {
+  console.log("line 82 ");
+  console.log(db == undefined || db == null);
+
+  // return new Promise((resolve, reject) => {
+  //   db.transaction(tx => {
+  //     console.log(tx == undefined || tx == null);
+  //     tx.executeSql('DROP TABLE sleep_duration');
+  //   },
+  //     (_, error) => { console.log("error dropping sleep_duration table"); reject(error);},
+  //     (_, success) => { console.log("successfully dropped sleep_duration table"); resolve(success); }
+
+  //   )
+  // })
+  db.transaction(tx => {
+    console.log(tx == undefined || tx == null);
+    tx.executeSql('DROP TABLE sleep_duration');
+  },
+    (_, error) => { console.log("error dropping sleep_duration table");},
+    (_, success) => { console.log("successfully dropped sleep_duration table"); }
+
+  )
+}
+  
+const createTable = () => {
+  return new Promise((resolve, reject) => {
+    db.transaction(
+      tx => {
+        tx.executeSql(
+          // 'CREATE TABLE IF NOT EXISTS test (something INT);'
+          // 'CREATE TABLE IF NOT EXISTS sleep_duration (id INT NOT NULL PRIMARY KEY AUTO_INCREMENT, start_time TIMESTAMP, end_time TIMESTAMP);'
+          // 'CREATE TABLE IF NOT EXISTS sleep_duration (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, hour INT, minute INT);'
+          // 'DROP TABLE test;'
+          // 'DROP TABLE sleep_duration;'
+          // 'CREATE TABLE IF NOT EXISTS sleep_duration (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, start_time TIMESTAMP, end_time TIMESTAMP;'
+          // 'CREATE TABLE IF NOT EXISTS test (col TIMESTAMP);'
+          // 'DROP TABLE test;'
+          'CREATE TABLE IF NOT EXISTS sleep_duration (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, start_time TIMESTAMP, end_time TIMESTAMP);'
+        )
+      }, 
+      (_, error) => {console.log("error"); reject(error);},
+      (_, success) => {console.log("success"); resolve(success);}
+    )
+  })
+  
+}
+
+
+const setupDatabaseAsync = () => {
+  console.log(db == undefined || db == null);
+  
+  // return new Promise((resolve, reject) => {
+  //   db.transaction(
+  //     tx => {
+  //       tx.executeSql(
+  //         'CREATE TABLE IF NOT EXISTS sleep_duration (id INT NOT NULL AUTO_INCREMENT, start_time TIMESTAMP, end_time TIMESTAMP, PRIMARY KEY (`id`));'
+  //       )
+  //     },
+  //     (_, error) => { console.log("db error creating tables: " + error); reject(error) },
+  //     (_, success) => { resolve(success)}
+  //   )
+  // })
+  db.transaction(
+    tx => {
+      tx.executeSql(
+        'CREATE TABLE IF NOT EXISTS sleep_duration (id INT NOT NULL AUTO_INCREMENT, start_time TIMESTAMP, end_time TIMESTAMP, PRIMARY KEY (`id`));'
+      )
+    },
+    (_, error) => { console.log("db error creating tables: " + error); },
+    (_, success) => { console.log("success")}
+  )
+}
+
+// const setupSleepAsync = async () => {
+//   return new Promise((resolve, _reject) => {
+//     db.transaction( tx => {
+//         tx.executeSql( 'INSERT INTO sleep_duration (hour, minute) values (?,?)', [0, 0] );
+//       },
+//       (t, error) => { console.log("db error insertSleepDuration"); console.log(error); resolve() },
+//       (t, success) => { resolve(success)}
+//     )
+//   })
+// }
 
 export const Database = {
   getAllEntries,
   getLastSleep,
   insertSleepDuration,
+  insertStartTime,
+  insertEndTime,
   setupDatabaseAsync,
-  setupSleepAsync,
   dropDatabaseTablesAsync,
+  createTable,
 }

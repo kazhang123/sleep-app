@@ -5,22 +5,41 @@ import SleepScreen from './SleepScreen';
 import {Database} from '../Database'
 import { useEffect } from 'react';
 import { useIsFocused } from '@react-navigation/native'
+import {calculateSleepTime} from '../utils/sleepTimeCalculator'
 
 const WelcomeScreen = (props) => {
     const [isEnabled, setIsEnabled] = useState(false);
     const [sleepTime, setSleepTime] = useState({hour: 0, minute: 0})
-    const turnOnSleepMode = () => props.navigation.navigate("SleepScreen");
-    const isFocused = useIsFocused()
+    const isFocused = useIsFocused();
 
-    const setSleepCallback = (_hour, _minute) => {
-        setSleepTime({hour: _hour, minute: _minute});
+    const setSleepCallback = (startTime, endTime) => {
+        console.log("line 17");
+        if (endTime == null) console.log("wow");
+        let startDate = startTime ? new Date(startTime.replace(" ", "T")) : new Date();
+        let endDate = endTime ? new Date(endTime.replace(" ", "T")) : new Date();
+        let hours = calculateSleepTime(startDate, endDate);
+        console.log(startDate);
+        console.log(endDate);
+        console.log(hours);
+        setSleepTime({
+            hour: Math.floor(hours), 
+            minute: Math.floor((hours - Math.floor(hours)) * 60)
+        });
     }
 
-    useEffect(() => {
-        return () => {
-            setSleepTime({});
+    // useEffect(() => {
+    //     return () => {
+    //         setSleepTime({});
+    //     }
+    // }, []);
+    async function turnOnSleepMode() {
+        try {
+            await Database.insertStartTime();
+            props.navigation.navigate("SleepScreen");
+        } catch(e) {
+            console.log("error occurred inserting start time" + e);
         }
-    }, []);
+    };
 
     useEffect(() => {
         Database.getLastSleep(setSleepCallback);
@@ -36,7 +55,7 @@ const WelcomeScreen = (props) => {
                     thumbColor={isEnabled ? "#ffffff" : "#f4f3f4"}
                     ios_backgroundColor="#3e3e3e"
                     onValueChange={turnOnSleepMode}
-                    value={isEnabled}
+                    value="false"
                 />
                 <Button style={{alignSelf: "flex-start", position: "absolute", top: "80%"}} title="tracker" onPress={() => props.navigation.navigate("TrackerScreen")}/>
             </View>

@@ -2,6 +2,8 @@ import 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { SafeAreaView, StyleSheet, Text, View, Image, TouchableHighlight, Button, Alert, Dimensions } from 'react-native';
+import { useEffect } from 'react';
+import { useState } from 'react';
 import WelcomeScreen from './screens/WelcomeScreen';
 import SleepScreen from './screens/SleepScreen';
 import TrackerScreen from './screens/TrackerScreen';
@@ -9,35 +11,41 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as SplashScreen from 'expo-splash-screen';
 import useDatabase from './useDatabase';
-import { useEffect, useState } from 'react/cjs/react.production.min';
 import { Database } from './Database';
 
 export default function App() {
   const Stack = createStackNavigator();
   // const [isLoading, setIsLoading] = useState(true);
   // console.log(Dimensions.get("screen"));
-  // const [isDBLoadingComplete, setIsDBLoadingComplete] = useState(false);
+  const [isDBLoadingComplete, setIsDBLoadingComplete] = useState(false);
 
-  // useEffect(() => {
+  useEffect(() => {
     async function prepare() {
       try {
-        await SplashScreen.preventAutoHideAsync(); //don't let the splash screen hide
+        // await SplashScreen.preventAutoHideAsync(); //don't let the splash screen hide
   
-        await Database.setupDatabaseAsync()
-        // let isDBLoadingComplete = false;
+        await Database.createTable();
+        // Database.dropDatabaseTablesAsync()
+        // Database.setupDatabaseAsync()
+
+        console.log("line 28");
+        // await Database.dropDatabaseTablesAsync();
+        // let isDBLoadingComplete = true;
+        setIsDBLoadingComplete(true);
         // isDBLoadingComplete = useDatabase();
       
         // if (isDBLoad ingComplete) {
-        //   setIsLoading(false);
-          SplashScreen.hideAsync();
+          // setIsLoading(false);
+          // SplashScreen.hideAsync();
         // }
       } catch (e) {
+        console.log("line 42");
         console.warn(e);
       } 
     }
 
     prepare();
-  // })
+  }, [])
 
   // async function prepare() {
   //   try {
@@ -63,6 +71,11 @@ export default function App() {
   // if (isLoading) {
   //   return null;
   // }
+  
+  if (!isDBLoadingComplete) {
+    return null;
+  } 
+
   // if (!isDBLoadingComplete) {
   //   return null;
   // }
