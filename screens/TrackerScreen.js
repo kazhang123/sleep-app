@@ -48,7 +48,7 @@ function TrackerScreen(props) {
         let startTime = new Date(data[i].startTime.replace(" ", "T"));
         let endTime = new Date(data[i].endTime.replace(" ", "T"))
         let dataPoint = {
-          x: startTime,
+          x: new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getUTCDate()),
           y: calculateSleepTime(startTime, endTime),
         }
 
@@ -74,12 +74,15 @@ function TrackerScreen(props) {
         });
       }
     }
+
+    console.log(domain);
   }, [dataSet])
 
   const getDomain = () => {
     if (dataSet == undefined || dataSet.length === 0) {
       // return prior week
       return {
+        // one week
         x: [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), Date.now()]
       };
     }
@@ -102,59 +105,60 @@ function TrackerScreen(props) {
   if (!isDBLoadingComplete) {
     return null;
   }
-    return (
-        <View style={styles.container}>
-        <Text>Average time in bed:</Text>
-        <Button title="hello" onPress={() => props.navigation.navigate("WelcomeScreen")}/>
-          <VictoryChart 
-            width={400} 
-            theme={VictoryTheme.material}
-            containerComponent={
-              <VictoryZoomContainer 
-                zoomDomain= {domain}
-                // onZoomDomainChange={ }
-              />
-            }
-            >
 
-              <VictoryAxis
-                tickValues={ticks}
-                tickFormat={(x) => {
-                  if (isDBLoadingComplete) {
-                    return `${x.getMonth() + 1}-${x.getDate()}`;
-                  } 
-                  return '';
-                }}
-                scale="time"
-              />
+  return (
+      <View style={styles.container}>
+      <Text>Average time in bed:</Text>
+      <Button title="hello" onPress={() => props.navigation.navigate("WelcomeScreen")}/>
+        <VictoryChart 
+          width={400} 
+          theme={VictoryTheme.material}
+          containerComponent={
+            <VictoryZoomContainer 
+              zoomDomain={domain}
+              // onZoomDomainChange={ }
+            />
+          }
+          >
 
-            <VictoryAxis dependentAxis
-              standalone={false}
+            <VictoryAxis
+              tickValues={ticks}
+              tickFormat={(x) => {
+                if (isDBLoadingComplete && ticks.length > 0) {
+                  return `${x.getMonth() + 1}-${x.getDate()}`;
+                } 
+                return '';
+              }}
+              scale="time"
             />
 
-            <VictoryBar 
-              alignment="start"
-              // barRatio={0.9}
-              barWidth={20}
-              cornerRadius={{ top: 12, bottom: 12 }}
-              data={dataSet}
-              domainPadding={{x: [25, 25]}}
-              // labels={( datum ) => {  return `${datum.x.toLocaleString('default', { month: 'short' })}`}} // get labels as month name
-              // https://stackoverflow.com/questions/57890002/how-to-control-victory-x-axis-ticks-labels
-              // labels={(datum) => {`${datum.x.getMonth() + 1}-${datum.x.getDate()}`}}
-              // labelComponent={<VictoryLabel y={250} verticalAnchor={"start"}/>}
+          <VictoryAxis dependentAxis
+            standalone={false}
+          />
 
-              // scale={{x: "time"}}
-              // standalone={false}
-              // horizontal={true} 
-              // labels={({ datum }) => Math.round(datum.time)}
-              // style={{ labels: { fill: "white" } }}
-              // labelComponent={<VictoryLabel dx={-97} dy={-5}/>}
-              // y0={(d) => d.time - 7}
-              />
-            </VictoryChart>
-      </View>
-    );
+          <VictoryBar 
+            alignment="start"
+            // barRatio={0.9}
+            barWidth={20}
+            // cornerRadius={{ top: 12, bottom: 12 }}
+            data={dataSet}
+            domainPadding={{x: [25, 25]}}
+            // labels={( datum ) => {  return `${datum.x.toLocaleString('default', { month: 'short' })}`}} // get labels as month name
+            // https://stackoverflow.com/questions/57890002/how-to-control-victory-x-axis-ticks-labels
+            // labels={(datum) => {`${datum.x.getMonth() + 1}-${datum.x.getDate()}`}}
+            // labelComponent={<VictoryLabel y={250} verticalAnchor={"start"}/>}
+
+            // scale={{x: "time"}}
+            // standalone={false}
+            // horizontal={true} 
+            // labels={({ datum }) => Math.round(datum.time)}
+            // style={{ labels: { fill: "white" } }}
+            // labelComponent={<VictoryLabel dx={-97} dy={-5}/>}
+            // y0={(d) => d.time - 7}
+            />
+          </VictoryChart>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

@@ -27,14 +27,16 @@ const WelcomeScreen = (props) => {
         });
     }
 
-    // useEffect(() => {
-    //     return () => {
-    //         setSleepTime({});
-    //     }
-    // }, []);
     async function turnOnSleepMode() {
         try {
+            // Database.insertStartTime()
+            //     .then(() => {
+            //         console.log("line 34");
+            //         props.navigation.navigate("SleepScreen");
+            //     });
             await Database.insertStartTime();
+            // await Database.test();
+
             props.navigation.navigate("SleepScreen");
         } catch(e) {
             console.log("error occurred inserting start time" + e);

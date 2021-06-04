@@ -10,7 +10,6 @@ import TrackerScreen from './screens/TrackerScreen';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as SplashScreen from 'expo-splash-screen';
-import useDatabase from './useDatabase';
 import { Database } from './Database';
 
 export default function App() {
@@ -23,14 +22,9 @@ export default function App() {
     async function prepare() {
       try {
         // await SplashScreen.preventAutoHideAsync(); //don't let the splash screen hide
-  
+        // await Database.dropTable();
         await Database.createTable();
-        // Database.dropDatabaseTablesAsync()
-        // Database.setupDatabaseAsync()
 
-        console.log("line 28");
-        // await Database.dropDatabaseTablesAsync();
-        // let isDBLoadingComplete = true;
         setIsDBLoadingComplete(true);
         // isDBLoadingComplete = useDatabase();
       
@@ -39,7 +33,6 @@ export default function App() {
           // SplashScreen.hideAsync();
         // }
       } catch (e) {
-        console.log("line 42");
         console.warn(e);
       } 
     }

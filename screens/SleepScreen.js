@@ -57,20 +57,20 @@ function SleepScreen(props) {
         StartImageRotate();
     }, []);
     
-      function StartImageRotate() {
-        rotateValue.setValue(0);
-        Animated.timing(rotateValue, {
-          toValue: 1,
-          duration: 3000,
-          easing: Easing.linear,
-          useNativeDriver: true
-        }).start();
-      }
-    
-      const RotateData = rotateValue.interpolate({
-        inputRange: [0, 1],
-        outputRange: ["0deg", "360deg"],
-      });
+    function StartImageRotate() {
+    rotateValue.setValue(0);
+    Animated.timing(rotateValue, {
+        toValue: 1,
+        duration: 3000,
+        easing: Easing.linear,
+        useNativeDriver: true
+    }).start();
+    }
+
+    const RotateData = rotateValue.interpolate({
+    inputRange: [0, 1],
+    outputRange: ["0deg", "360deg"],
+    });
 
     async function recordWakeUpTime() {
         try {
