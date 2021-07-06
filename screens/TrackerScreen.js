@@ -12,6 +12,7 @@ import {calculateSleepTime} from '../utils/sleepTimeCalculator'
 function TrackerScreen(props) {
   const [data, setData] = useState([]);
   const [dataSet, setDataset] = useState([]);
+  const [avg, setAvg] = useState(0);
   const [ticks, setTicks] = useState([new Date()]);
   const [isDBLoadingComplete, setIsDBLoadingComplete] = useState(false);
   const [domain, setDomain] = useState({
@@ -40,17 +41,18 @@ function TrackerScreen(props) {
 
   useEffect(() => {
     if (isDBLoadingComplete) {
-      console.log("data length:" + data.length);
       let ticks = [];
       let dataPoints = [];
       for (let i = 0; i < data.length; i++) {
-        console.log(data[i]);
         let startTime = new Date(data[i].startTime.replace(" ", "T"));
         let endTime = new Date(data[i].endTime.replace(" ", "T"))
         let dataPoint = {
           x: new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getUTCDate()),
           y: calculateSleepTime(startTime, endTime),
+          // y0: startTime.getTime(),
         }
+
+        console.log(dataPoint);
 
         ticks.push(startTime);
         dataPoints.push(dataPoint);
@@ -74,33 +76,42 @@ function TrackerScreen(props) {
         });
       }
     }
-
     console.log(domain);
   }, [dataSet])
 
-  const getDomain = () => {
-    if (dataSet == undefined || dataSet.length === 0) {
-      // return prior week
-      return {
-        // one week
-        x: [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), Date.now()]
-      };
+  useEffect(() => {
+    let length = Math.min(7, dataSet.length);
+    let avgSleep = 0;
+    for (let i = 0; i < length; i++) {
+      avgSleep += parseFloat(dataSet[i].y);
     }
+    avgSleep = (avgSleep / length).toFixed(2);
+    setAvg(avgSleep);
+  }, [dataSet]);
 
-    // return last 7 data points
-    if (dataSet.length >= 7) {
-      return {
-        x: [dataSet[dataSet.length - 8].x, dataSet[dataSet.length - 1].x]
-      };
-    }
+  // const getDomain = () => {
+  //   if (dataSet == undefined || dataSet.length === 0) {
+  //     // return prior week
+  //     return {
+  //       // one week
+  //       x: [new Date(Date.now() - 7 * 24 * 60 * 60 * 1000), Date.now()]
+  //     };
+  //   }
 
-    let lastDate = dataSet[dataSet.length - 1]
-    return {
-      x: [new Date(lastDate - 7 * 24 * 60 * 60 * 1000), lastDate]
-    };
+  //   // return last 7 data points
+  //   if (dataSet.length >= 7) {
+  //     return {
+  //       x: [dataSet[dataSet.length - 8].x, dataSet[dataSet.length - 1].x]
+  //     };
+  //   }
+
+  //   let lastDate = dataSet[dataSet.length - 1]
+  //   return {
+  //     x: [new Date(lastDate - 7 * 24 * 60 * 60 * 1000), lastDate]
+  //   };
     
     
-  };
+  // };
 
   if (!isDBLoadingComplete) {
     return null;
@@ -108,7 +119,8 @@ function TrackerScreen(props) {
 
   return (
       <View style={styles.container}>
-      <Text>Average time in bed:</Text>
+      <Text>Average time in bed this week: {avg} hours</Text>
+      <Text>Your Sleep for the Last Week</Text>
       <Button title="hello" onPress={() => props.navigation.navigate("WelcomeScreen")}/>
         <VictoryChart 
           width={400} 
@@ -134,6 +146,7 @@ function TrackerScreen(props) {
 
           <VictoryAxis dependentAxis
             standalone={false}
+            // scale="time"
           />
 
           <VictoryBar 
@@ -142,7 +155,8 @@ function TrackerScreen(props) {
             barWidth={20}
             // cornerRadius={{ top: 12, bottom: 12 }}
             data={dataSet}
-            domainPadding={{x: [25, 25]}}
+            domainPadding={{x: 10}}
+            // y0={(d) => d.y0}
             // labels={( datum ) => {  return `${datum.x.toLocaleString('default', { month: 'short' })}`}} // get labels as month name
             // https://stackoverflow.com/questions/57890002/how-to-control-victory-x-axis-ticks-labels
             // labels={(datum) => {`${datum.x.getMonth() + 1}-${datum.x.getDate()}`}}
